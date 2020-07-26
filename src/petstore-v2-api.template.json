@@ -1,0 +1,321 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "ApimServiceName": {
+        "type": "string"
+      }
+    },
+    "resources": [
+      {
+        "properties": {
+          "authenticationSettings": {
+            "subscriptionKeyRequired": false
+          },
+          "subscriptionKeyParameterNames": {
+            "header": "Ocp-Apim-Subscription-Key",
+            "query": "subscription-key"
+          },
+          "apiRevision": "1",
+          "isCurrent": true,
+          "subscriptionRequired": true,
+          "displayName": "Petstore",
+          "serviceUrl": "http://petstore.swagger.io/v1",
+          "path": "petstore",
+          "protocols": [
+            "https"
+          ]
+        },
+        "name": "[concat(parameters('ApimServiceName'), '/petstore')]",
+        "type": "Microsoft.ApiManagement/service/apis",
+        "apiVersion": "2019-01-01",
+        "dependsOn": []
+      },
+      {
+        "properties": {
+          "contentType": "application/vnd.oai.openapi.components+json",
+          "document": {
+            "components": {
+              "schemas": {
+                "Pet": {
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "Pets": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pet"
+                  }
+                },
+                "Error": {
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "name": "[concat(parameters('ApimServiceName'), '/petstore/4f1dbdabb6c3ea11cc9fd20f')]",
+        "type": "Microsoft.ApiManagement/service/apis/schemas",
+        "apiVersion": "2019-01-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'petstore')]"
+        ]
+      },
+      {
+        "properties": {
+          "templateParameters": [],
+          "description": "Create a pet",
+          "request": {
+            "queryParameters": [],
+            "headers": [],
+            "representations": []
+          },
+          "responses": [
+            {
+              "statusCode": 201,
+              "description": "Null response",
+              "headers": [],
+              "representations": []
+            },
+            {
+              "statusCode": 400,
+              "description": "unexpected error",
+              "headers": [],
+              "representations": [
+                {
+                  "contentType": "application/json",
+                  "schemaId": "4f1dbdabb6c3ea11cc9fd20f",
+                  "typeName": "Error"
+                }
+              ]
+            },
+            {
+              "statusCode": 500,
+              "description": "unexpected error",
+              "headers": [],
+              "representations": [
+                {
+                  "contentType": "application/json",
+                  "schemaId": "4f1dbdabb6c3ea11cc9fd20f",
+                  "typeName": "Error"
+                }
+              ]
+            }
+          ],
+          "displayName": "Create a pet",
+          "method": "POST",
+          "urlTemplate": "/pets"
+        },
+        "name": "[concat(parameters('ApimServiceName'), '/petstore/createPets')]",
+        "type": "Microsoft.ApiManagement/service/apis/operations",
+        "apiVersion": "2019-01-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'petstore')]",
+          "[resourceId('Microsoft.ApiManagement/service/apis/schemas', parameters('ApimServiceName'), 'petstore', '4f1dbdabb6c3ea11cc9fd20f')]"
+        ]
+      },
+      {
+        "properties": {
+          "displayName": "pets"
+        },
+        "name": "[concat(parameters('ApimServiceName'), '/petstore/createPets/pets')]",
+        "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+        "apiVersion": "2019-01-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'petstore', 'createPets')]"
+        ]
+      },
+      {
+        "properties": {
+          "templateParameters": [
+            {
+              "name": "petId",
+              "description": "The id of the pet to retrieve",
+              "type": "string",
+              "required": true,
+              "values": []
+            }
+          ],
+          "description": "Info for a specific pet",
+          "request": {
+            "queryParameters": [],
+            "headers": [],
+            "representations": []
+          },
+          "responses": [
+            {
+              "statusCode": 200,
+              "description": "Expected response to a valid request",
+              "headers": [],
+              "representations": [
+                {
+                  "contentType": "application/json",
+                  "schemaId": "4f1dbdabb6c3ea11cc9fd20f",
+                  "typeName": "Pet"
+                }
+              ]
+            },
+            {
+              "statusCode": 400,
+              "description": "unexpected error",
+              "headers": [],
+              "representations": [
+                {
+                  "contentType": "application/json",
+                  "schemaId": "4f1dbdabb6c3ea11cc9fd20f",
+                  "typeName": "Error"
+                }
+              ]
+            },
+            {
+              "statusCode": 500,
+              "description": "unexpected error",
+              "headers": [],
+              "representations": [
+                {
+                  "contentType": "application/json",
+                  "schemaId": "4f1dbdabb6c3ea11cc9fd20f",
+                  "typeName": "Error"
+                }
+              ]
+            }
+          ],
+          "displayName": "Info for a specific pet",
+          "method": "GET",
+          "urlTemplate": "/pets/{petId}"
+        },
+        "name": "[concat(parameters('ApimServiceName'), '/petstore/showPetById')]",
+        "type": "Microsoft.ApiManagement/service/apis/operations",
+        "apiVersion": "2019-01-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'petstore')]",
+          "[resourceId('Microsoft.ApiManagement/service/apis/schemas', parameters('ApimServiceName'), 'petstore', '4f1dbdabb6c3ea11cc9fd20f')]"
+        ]
+      },
+      {
+        "properties": {
+          "displayName": "pets"
+        },
+        "name": "[concat(parameters('ApimServiceName'), '/petstore/showPetById/pets')]",
+        "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+        "apiVersion": "2019-01-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'petstore', 'showPetById')]"
+        ]
+      },
+      {
+        "properties": {
+          "templateParameters": [],
+          "description": "List all pets",
+          "request": {
+            "queryParameters": [
+              {
+                "name": "limit",
+                "description": "Format - int32. How many items to return at one time (max 100)",
+                "type": "integer",
+                "required": false,
+                "values": []
+              }
+            ],
+            "headers": [],
+            "representations": []
+          },
+          "responses": [
+            {
+              "statusCode": 200,
+              "description": "A paged array of pets",
+              "headers": [
+                {
+                  "name": "x-next",
+                  "description": "A link to the next page of responses",
+                  "type": "string",
+                  "required": false,
+                  "values": []
+                }
+              ],
+              "representations": [
+                {
+                  "contentType": "application/json",
+                  "schemaId": "4f1dbdabb6c3ea11cc9fd20f",
+                  "typeName": "Pets"
+                }
+              ]
+            },
+            {
+              "statusCode": 400,
+              "description": "unexpected error",
+              "headers": [],
+              "representations": [
+                {
+                  "contentType": "application/json",
+                  "schemaId": "4f1dbdabb6c3ea11cc9fd20f",
+                  "typeName": "Error"
+                }
+              ]
+            },
+            {
+              "statusCode": 500,
+              "description": "unexpected error",
+              "headers": [],
+              "representations": [
+                {
+                  "contentType": "application/json",
+                  "schemaId": "4f1dbdabb6c3ea11cc9fd20f",
+                  "typeName": "Error"
+                }
+              ]
+            }
+          ],
+          "displayName": "List all pets",
+          "method": "GET",
+          "urlTemplate": "/pets"
+        },
+        "name": "[concat(parameters('ApimServiceName'), '/petstore/listPets')]",
+        "type": "Microsoft.ApiManagement/service/apis/operations",
+        "apiVersion": "2019-01-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'petstore')]",
+          "[resourceId('Microsoft.ApiManagement/service/apis/schemas', parameters('ApimServiceName'), 'petstore', '4f1dbdabb6c3ea11cc9fd20f')]"
+        ]
+      },
+      {
+        "properties": {
+          "displayName": "pets"
+        },
+        "name": "[concat(parameters('ApimServiceName'), '/petstore/listPets/pets')]",
+        "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+        "apiVersion": "2019-01-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'petstore', 'listPets')]"
+        ]
+      }
+    ]
+  }
